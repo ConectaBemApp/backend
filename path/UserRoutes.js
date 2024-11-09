@@ -4,25 +4,26 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const router = express.Router();
-var cors = require('cors')
 
 // Models
 const User = require("../models/User");
-var corsOptions = {
-  origin: ["https://conectabemback.onrender.com", "http://localhost:3000/"],
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
+
 
 // Config JSON responses
 router.use(express.json());
+router.use(cors({
+    origin: "https://conectabemback.onrender.com",
+    headers: ["Content-Type"],
+    credentials: true,
+}));
 
 // Open Route - Public Route
-router.get("/", cors(corsOptions), (req, res) => {
+router.get("/", (req, res) => {
   res.status(200).json({ msg: "Hello World" });
 });
 
 // Private route
-router.get("/user/:id", cors(corsOptions), checkToken, async (req, res) => {
+router.get("/user/:id", checkToken, async (req, res) => {
   const id = req.params.id;
   // check if user exists
   const user = await User.findById(id, "-password");
@@ -50,7 +51,7 @@ function checkToken(req, res, next) {
 }
 
 // Register user
-router.post("/auth/register", cors(corsOptions), async (req, res) => {
+router.post("/auth/register", async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
 
   // validations
@@ -97,7 +98,7 @@ router.post("/auth/register", cors(corsOptions), async (req, res) => {
 });
 
 // Login user
-router.post("/auth/login", cors(corsOptions), async (req, res) => {
+router.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
   // validations
   if (!email) {
