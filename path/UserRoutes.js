@@ -9,7 +9,7 @@ var cors = require('cors')
 // Models
 const User = require("../models/User");
 var corsOptions = {
-  origin: "https://conectabemback.onrender.com",
+  origin: ["https://conectabemback.onrender.com", "http://localhost:3000/"],
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
