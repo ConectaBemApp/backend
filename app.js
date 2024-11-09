@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const userRoutes = require("./path/UserRoutes.js");
 const swaggerUI = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output.json");
-var cors = require("cors");
 
 const app = express();
 
