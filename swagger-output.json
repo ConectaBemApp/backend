@@ -7,13 +7,19 @@
   },
   "host": "localhost:3000",
   "basePath": "/",
+  "tags": [
+    {
+      "name": "User",
+      "description": "Endpoints relacionados aos usuários"
+    }
+  ],
   "schemes": [
     "http"
   ],
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "description": "Teste",
         "responses": {
           "200": {
             "description": "OK"
@@ -23,7 +29,8 @@
     },
     "/user/{id}": {
       "get": {
-        "description": "",
+        "tags": ["User"],
+        "description": "Puxar informações do usuário",
         "parameters": [
           {
             "name": "id",
@@ -55,7 +62,8 @@
     },
     "/auth/register": {
       "post": {
-        "description": "",
+        "tags": ["User"],
+        "description": "Cadastro do usuário",
         "parameters": [
           {
             "name": "body",
@@ -94,7 +102,8 @@
     },
     "/auth/login": {
       "post": {
-        "description": "",
+        "tags": ["User"],
+        "description": "Login do usuário",
         "parameters": [
           {
             "name": "body",

@@ -13,12 +13,40 @@ const User = require("../models/User");
 router.use(express.json());
 router.use(cors());
 
-// Entrance from the url - Public Route
+// Open Route - Public Route
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     tags: User
+ *     description: Retorna uma mensagem de boas-vindas
+ *     responses:
+ *       200:
+ *         description: Mensagem de boas-vindas
+ */
 router.get("/", (req, res) => {
   res.status(200).json({ msg: "Hello World" });
 });
 
-// Get Info from specif user - Private route
+// Private route
+/**
+ * @swagger
+ * /user/{id}:
+ *   get:
+ *     tags:
+ *       - User
+ *     description: Retorna informações do usuário
+ *     parameters:
+ *       - name: id
+ *         description: ID do usuário
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Informações do usuário
+ *       404:
+ *         description: Usuário não encontrado
+ */
 router.get("/user/:id", checkToken, async (req, res) => {
   const id = req.params.id;
   // check if user exists
@@ -46,7 +74,37 @@ function checkToken(req, res, next) {
   }
 }
 
-// Register user
+// Public route for login
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     tags:
+ *       - User
+ *     description: Realiza o cadastro do usuário
+ *     parameters:
+ *       - name: email
+ *         description: Email do usuário
+ *         required: true
+ *         type: string
+ *       - name: name
+ *         description: Nome do usuário
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         description: Senha do usuário
+ *         required: true
+ *         type: string
+ *       - name: confirmPassword
+ *         description: Confirmação de senha
+ *         required: true
+ *         type: string
+ *     responses:
+ *       201:
+ *         description: Cadastro bem-sucedido
+ *       422:
+ *         description: Credenciais inválidas
+ */
 router.post("/auth/register", async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
 
@@ -93,7 +151,29 @@ router.post("/auth/register", async (req, res) => {
   }
 });
 
-// Login user
+// Public route for login
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     tags:
+ *       - User
+ *     description: Realiza o login do usuário
+ *     parameters:
+ *       - name: email
+ *         description: Email do usuário
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         description: Senha do usuário
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Login bem-sucedido
+ *       401:
+ *         description: Credenciais inválidas
+ */
 router.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
   // validations
