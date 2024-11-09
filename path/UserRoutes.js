@@ -9,13 +9,12 @@ var cors = require("cors");
 // Models
 const User = require("../models/User");
 
-
 // Config JSON responses
 router.use(express.json());
 router.use(cors());
 
 // Entrance from the url - Public Route
-router.get("/test", (req, res) => {
+router.get("/", (req, res) => {
   res.status(200).json({ msg: "Hello World" });
 });
 

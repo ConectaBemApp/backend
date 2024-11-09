@@ -15,7 +15,7 @@ app.use(express.json());
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASS;
 
-app.use("/", swaggerUI.serve, swaggerUI.setup(swaggerFile));
+app.use("/doc", swaggerUI.serve, swaggerUI.setup(swaggerFile));
 app.use("/", userRoutes);
 
 
