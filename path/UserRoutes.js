@@ -12,18 +12,14 @@ const User = require("../models/User");
 
 // Config JSON responses
 router.use(express.json());
-router.use(cors({
-    origin: "https://conectabemback.onrender.com",
-    headers: ["Content-Type"],
-    credentials: true,
-}));
+router.use(cors());
 
-// Open Route - Public Route
-router.get("/", (req, res) => {
+// Entrance from the url - Public Route
+router.get("/test", (req, res) => {
   res.status(200).json({ msg: "Hello World" });
 });
 
-// Private route
+// Get Info from specif user - Private route
 router.get("/user/:id", checkToken, async (req, res) => {
   const id = req.params.id;
   // check if user exists
