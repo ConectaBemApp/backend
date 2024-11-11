@@ -14,40 +14,25 @@ router.use(express.json());
 router.use(cors());
 
 // Open Route - Public Route
-/**
- * @swagger
- * /:
- *   get:
- *     tags: User
- *     description: Retorna uma mensagem de boas-vindas
- *     responses:
- *       200:
- *         description: Mensagem de boas-vindas
- */
 router.get("/", (req, res) => {
+  /*
+    #swagger.tags = ['Teste']
+    #swagger.summary = 'Teste da rota'
+    #swagger.description = 'Este endpoint é um teste para verificar se a API está funcionando corretamente'
+  */
   res.status(200).json({ msg: "Hello World" });
 });
 
 // Private route
-/**
- * @swagger
- * /user/{id}:
- *   get:
- *     tags:
- *       - User
- *     description: Retorna informações do usuário
- *     parameters:
- *       - name: id
- *         description: ID do usuário
- *         required: true
- *         type: string
- *     responses:
- *       200:
- *         description: Informações do usuário
- *       404:
- *         description: Usuário não encontrado
- */
 router.get("/user/:id", checkToken, async (req, res) => {
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Retorna informações do usuário'
+    #swagger.description = 'Retorna informações do usuário'
+    #swagger.security = [{
+      "bearerAuth": []
+    }] 
+  */
   const id = req.params.id;
   // check if user exists
   const user = await User.findById(id, "-password");
@@ -75,37 +60,12 @@ function checkToken(req, res, next) {
 }
 
 // Public route for login
-/**
- * @swagger
- * /auth/register:
- *   post:
- *     tags:
- *       - User
- *     description: Realiza o cadastro do usuário
- *     parameters:
- *       - name: email
- *         description: Email do usuário
- *         required: true
- *         type: string
- *       - name: name
- *         description: Nome do usuário
- *         required: true
- *         type: string
- *       - name: password
- *         description: Senha do usuário
- *         required: true
- *         type: string
- *       - name: confirmPassword
- *         description: Confirmação de senha
- *         required: true
- *         type: string
- *     responses:
- *       201:
- *         description: Cadastro bem-sucedido
- *       422:
- *         description: Credenciais inválidas
- */
 router.post("/auth/register", async (req, res) => {
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Realiza o cadastro do usuário'
+    #swagger.description = 'Realiza o cadastro do usuário'
+  */
   const { name, email, password, confirmPassword } = req.body;
 
   // validations
@@ -151,30 +111,13 @@ router.post("/auth/register", async (req, res) => {
   }
 });
 
-// Public route for login
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     tags:
- *       - User
- *     description: Realiza o login do usuário
- *     parameters:
- *       - name: email
- *         description: Email do usuário
- *         required: true
- *         type: string
- *       - name: password
- *         description: Senha do usuário
- *         required: true
- *         type: string
- *     responses:
- *       200:
- *         description: Login bem-sucedido
- *       401:
- *         description: Credenciais inválidas
- */
 router.post("/auth/login", async (req, res) => {
+  // Public route for login
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Realiza o login do usuário'
+    #swagger.description = 'Realiza o login do usuário'
+  */
   const { email, password } = req.body;
   // validations
   if (!email) {
