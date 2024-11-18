@@ -15,6 +15,7 @@ router.use(express.json());
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080'];
+    console.log(origin);
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
