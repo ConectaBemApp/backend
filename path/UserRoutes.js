@@ -14,8 +14,12 @@ router.use(express.json());
 
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log("Origin: ", origin);
-    callback(null, true);
+    const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080'];
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
   },
   optionsSuccessStatus: 200,
 };
