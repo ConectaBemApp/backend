@@ -14,7 +14,7 @@ router.use(express.json());
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080'];
+    const allowedOrigins = ['https://conectabemback.onrender.com'];
     console.log(origin);
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
