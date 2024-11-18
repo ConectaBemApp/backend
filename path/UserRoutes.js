@@ -11,7 +11,16 @@ const User = require("../models/User");
 
 // Config JSON responses
 router.use(express.json());
-router.use(cors());
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log("Origin: ", origin);
+    callback(null, true);
+  },
+  optionsSuccessStatus: 200,
+};
+
+router.use(cors(corsOptions));
 
 // Open Route - Public Route
 router.get("/", (req, res) => {
