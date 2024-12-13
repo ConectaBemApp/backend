@@ -27,7 +27,7 @@ export const checkUserEmailSendOTP = async (req, res) => {
   try {
     // gerando o otp
     const OTP = generateOTP();
-    enviarEmail('OTP', `segue seu otp: ${OTP}`);
+    enviarEmail(email, OTP);
 
     // Hashing otp
     const salt = await bcrypt.genSalt(saltRounds);
