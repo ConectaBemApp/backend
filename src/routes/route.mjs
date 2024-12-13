@@ -6,8 +6,9 @@ const router = express.Router();
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ['https://conectabemback.onrender.com', 'http://localhost:3000/'];
-    /* console.log(origin); */
+    const allowedOrigins = ['https://conectabemback.onrender.com', 'http://localhost:3000'];
+    /* console.log(`Origin: ${origin}`); */
+
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
@@ -23,7 +24,7 @@ router.post('/auth/checkUserSendOTP', checkUserEmailSendOTP);
 router.post('/auth/checkOTP', checkOTP);
 
 router.get('/', (req, res) => {
-  /*   
+  /*
     #swagger.tags = ['Test']
     #swagger.summary = 'Teste para verificar se API está funcionando'
   */

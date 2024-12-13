@@ -2,6 +2,7 @@ import { User } from '../models/index.mjs';
 import { generateOTP } from '../utils/generateOTP.mjs';
 import { enviarEmail } from '../utils/sendEmail.mjs';
 import bcrypt from 'bcrypt';
+import testEmail from '../utils/regexValidations.mjs';
 
 const saltRounds = 10;
 
@@ -20,8 +21,8 @@ export const checkUserEmailSendOTP = async (req, res) => {
   const { email } = req.body;
 
   // validation
-  if (!email) {
-    return res.status(422).json({ message: "Email é exigido" });
+  if (!email || testEmail(email) === false) {
+    return res.status(422).json({ message: "Um e-mail é exigido" });
   }
   try {
     // gerando o otp
@@ -31,6 +32,7 @@ export const checkUserEmailSendOTP = async (req, res) => {
     // Hashing otp
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedOTP = await bcrypt.hash(String(OTP), salt);
+
 
     console.log(`OTP gerado ${OTP}, hashed OTP: ${hashedOTP}`);
 
@@ -74,7 +76,25 @@ export const checkOTP = async (req, res) => {
 */
 
   const { email, OTP } = req.body;
-  if (!email || !OTP) {
-    return res.status(422).json({ msg: "Parâmetros exigidos não estão sendo enviados no body" });
+  if (!email || !OTP || testEmail(email) === false) {
+    return res.status(422).json({ msg: "Parâmetros exigidos não estão sendo enviados ou não estão sendo enviados de forma correta no body" });
+  }
+  const userExists = await User.findOne({ email: email })
+  const resultComparation = await bcrypt.compare(OTP, userExists.hashedOTP);
+  console.log(resultComparation)
+  if (resultComparation) {
+    return res.status(200).json({
+      id: userExists._id,
+      email: {
+        address: userExists.email,
+        isConfirmed: true
+      },
+      role: userExists.role || 'User',
+      otp: {
+        isConfirmed: true
+      }
+    })
+  } else {
+    return res.status(401).json({ msg: "Código OTP está errado" })
   }
 }

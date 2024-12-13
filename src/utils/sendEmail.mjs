@@ -1,24 +1,21 @@
 import nodemailer from 'nodemailer';
 
-// Criar um objeto de transporte
 const transporter = nodemailer.createTransport({
-  host: 'sandbox.smtp.mailtrap.io',
-  port: 2525,
+  host: 'live.smtp.mailtrap.io',
+  port: 587,
   auth: {
-    user: 'd2861ed9284c81',
-    pass: '179b0cdde49fd3',
+    user: 'smtp@mailtrap.io',
+    pass: '54011a31235db7dbf4d3d762a3c894b7',
   }
 });
 
-// Configurar o objeto mailOptions
 const mailOptions = {
-  from: 'gustavomottadeveloper@gmail.com',
-  to: 'gustavomottacardoso1@gmail.com',
+  from: 'smtp@demomailtrap.com',
+  to: 'gustavomottadeveloper@gmail.com',
   subject: 'Enviando Email usando Node.js',
   text: 'Isso foi fácil!'
 };
 
-// Enviar o email
 export const enviarEmail = (subject, text) => {
   mailOptions.subject = subject;
   mailOptions.text = text;

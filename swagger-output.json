@@ -2,13 +2,16 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "ConectaBem Back-end APIs",
+    "title": "ConectaBem APIs",
     "description": "APIs para o projeto ConectaBem"
   },
   "host": "localhost:3000",
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": [
+        "http://localhost:3000",
+        "https://conectabemback.onrender.com"
+      ]
     }
   ],
   "basePath": "/",
@@ -115,14 +118,6 @@
             "description": "OK"
           }
         }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
       }
     }
   }
