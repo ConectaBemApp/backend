@@ -1,157 +1,128 @@
 {
-  "openapi": "3.0.0",
+  "swagger": "2.0",
   "info": {
     "version": "1.0.0",
     "title": "ConectaBem Back-end APIs",
     "description": "APIs para o projeto ConectaBem"
   },
+  "host": "localhost:3000",
   "servers": [
     {
       "url": "http://localhost:3000"
     }
   ],
+  "basePath": "/",
   "tags": [
     {
       "name": "User",
       "description": "Endpoints relacionados aos usuários"
+    },
+    {
+      "name": "Test",
+      "description": "Endpoints de teste"
     }
   ],
+  "schemes": [
+    "http"
+  ],
   "paths": {
+    "/auth/checkUserSendOTP": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Envia o código OTP por e-mail",
+        "description": "Checa se o usuário já está cadastrado no sistema. Envia o código OTP para registro/login da conta no e-mail do usuário",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário já existente, código OTP enviado por e-mail"
+          },
+          "201": {
+            "description": "Usuário criado com sucesso e código OTP enviado por e-mail"
+          },
+          "422": {
+            "description": "Parâmetros exigidos não estão sendo enviados no body"
+          },
+          "500": {
+            "description": "Erro no servidor"
+          }
+        }
+      }
+    },
+    "/auth/checkOTP": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Checa se OTPs coincidem",
+        "description": "Checa se o OTP enviado no body é o mesmo OTP encriptado no backend.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "OTP": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Còdigos OTP coincidem"
+          },
+          "401": {
+            "description": "Códigos OTP não coincidem"
+          },
+          "422": {
+            "description": "Parâmetros exigidos não estão sendo enviados no body"
+          },
+          "500": {
+            "description": "Erro no servidor"
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "tags": [
-          "Teste"
+          "Test"
         ],
-        "summary": "Teste da rota",
-        "description": "Este endpoint é um teste para verificar se a API está funcionando corretamente",
+        "summary": "Teste para verificar se API está funcionando",
+        "description": "",
         "responses": {
           "200": {
             "description": "OK"
           }
         }
       }
-    },
-    "/user/{id}": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Retorna informações do usuário",
-        "description": "Retorna informações do usuário",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Solicitação Inválida"
-          },
-          "401": {
-            "description": "Não autorizado"
-          },
-          "404": {
-            "description": "Não Encontrado"
-          }
-        }
-      }
-    },
-    "/auth/register": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Realiza o cadastro do usuário",
-        "description": "Realiza o cadastro do usuário",
-        "responses": {
-          "201": {
-            "description": "Criado"
-          },
-          "422": {
-            "description": ""
-          },
-          "500": {
-            "description": "Erro Interno do Servidor"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "example": "any"
-                  },
-                  "email": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  },
-                  "confirmPassword": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/login": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Realiza o login do usuário",
-        "description": "Realiza o login do usuário",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Não Encontrado"
-          },
-          "422": {
-            "description": ""
-          },
-          "500": {
-            "description": "Erro Interno do Servidor"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }
