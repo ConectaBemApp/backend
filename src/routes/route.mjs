@@ -6,7 +6,7 @@ const router = express.Router();
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ['https://conectabemback.onrender.com', 'http://localhost:3000'];
+    const allowedOrigins = ['https://backend-conectabem.onrender.com', 'http://localhost:3000'];
     /* console.log(`Origin: ${origin}`); */
 
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
