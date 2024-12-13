@@ -27,6 +27,6 @@ const doc = {
 };
 
 const outputFile = './../swagger-output.json';
-const routes = ['./Routes/route.mjs'];
+const routes = ['./routes/route.mjs'];
 
 swaggerAutogen({ language: 'pt-BR' })(outputFile, routes, doc);
