@@ -71,8 +71,8 @@
         "tags": [
           "User"
         ],
-        "summary": "Checa se OTPs coincidem",
-        "description": "Checa se o OTP enviado no body é o mesmo OTP encriptado no backend.",
+        "summary": "Checa se OTPs coincidem, e parte para o login/registro do usuário",
+        "description": "Checa se o OTP enviado no body é o mesmo OTP encriptado no backend. Se for o mesmo, será checado se o usuário já está cadastrado no backend, se estiver, o usuário é logado, se não estiver, o usuário está liberado para o registro",
         "parameters": [
           {
             "name": "body",
@@ -96,6 +96,94 @@
           },
           "401": {
             "description": "Códigos OTP não coincidem"
+          },
+          "422": {
+            "description": "Parâmetros exigidos não estão sendo enviados no body"
+          },
+          "500": {
+            "description": "Erro no servidor"
+          }
+        }
+      }
+    },
+    "/auth/createUser": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Completa o cadastro do usuário no backend",
+        "description": "Completa o cadastro do usuário (paciente ou profissional) de acordo com as suas respectivas características",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "example": "any"
+                },
+                "role": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "birthdayDate": {
+                  "example": "any"
+                },
+                "cepResidencial": {
+                  "example": "any"
+                },
+                "nomeClinica": {
+                  "example": "any"
+                },
+                "CNPJCPFProfissional": {
+                  "example": "any"
+                },
+                "cepClinica": {
+                  "example": "any"
+                },
+                "enderecoClinica": {
+                  "example": "any"
+                },
+                "complementoClinica": {
+                  "example": "any"
+                },
+                "professionalSpecialities": {
+                  "example": "any"
+                },
+                "otherProfessionalSpecialities": {
+                  "example": "any"
+                },
+                "professionalServicePreferences": {
+                  "example": "any"
+                },
+                "userSpecialities": {
+                  "example": "any"
+                },
+                "userServicePreferences": {
+                  "example": "any"
+                },
+                "userAcessibilityPreferences": {
+                  "example": "any"
+                },
+                "profilePhoto": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontardo, mas nenhuma alteração realizada no seu cadastro"
+          },
+          "201": {
+            "description": "Usuário encontrado, cadastro completado com sucesso"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
           },
           "422": {
             "description": "Parâmetros exigidos não estão sendo enviados no body"

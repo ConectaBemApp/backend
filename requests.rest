@@ -1,0 +1,21 @@
+POST http://localhost:3000/auth/checkOTP
+Content-Type: application/json
+
+{
+    "email": "gustavomottadeveloper@gmail.com",
+    "OTP": "6845"
+} 
+
+###
+
+POST http://localhost:3000/auth/createUser
+Content-Type: application/json
+
+{
+    "role": "paciente",
+    "userId": "677c979c3573232372c7773d",
+    "name": "Gustavo Motta",
+    "birthdayDate": "20/12/2003",
+    "userSpecialities": "Massoterapia",
+    "userServicePreferences": "Pet"
+} 

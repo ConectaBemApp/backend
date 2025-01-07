@@ -5,10 +5,10 @@ import bcrypt from "bcrypt";
 import testEmail from "../utils/regexValidations.mjs";
 import config from "../config/config.mjs";
 import jwt from "jsonwebtoken";
+import { parseDateString } from "../utils/parseDateString.mjs";
 
 const saltRounds = 10;
 
-// Public route for auth
 export const checkUserEmailSendOTP = async (req, res) => {
   /*
     #swagger.tags = ['User']
@@ -22,22 +22,18 @@ export const checkUserEmailSendOTP = async (req, res) => {
   */
   const { email } = req.body;
 
-  // validation
   if (!email || testEmail(email) === false) {
     return res.status(422).json({ message: "Um e-mail é exigido" });
   }
   try {
-    // gerando o otp
     const OTP = generateOTP();
     enviarEmail(email, OTP);
 
-    // Hashing otp
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedOTP = await bcrypt.hash(String(OTP), salt);
 
     console.log(`OTP gerado ${OTP}, hashed OTP: ${hashedOTP}`);
 
-    // check if user exists
     const userExists = await User.findOne({ email: email });
     if (!userExists) {
       const result = await User.create({
@@ -93,6 +89,7 @@ export const checkOTP = async (req, res) => {
   }
   try {
     const userExists = await User.findOne({ email: email });
+    await User.updateOne({ email }, { hashedOTP });
 
     const resultComparation = await bcrypt.compare(OTP, userExists.hashedOTP);
     console.log(`Comparação entre os OTPs: ${resultComparation}`);
@@ -122,3 +119,116 @@ export const checkOTP = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+export const completeSignUp = async (req, res) => {
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Completa o cadastro do usuário no backend'
+    #swagger.description = 'Completa o cadastro do usuário (paciente ou profissional) de acordo com as suas respectivas características'
+    #swagger.responses[201] = { description: 'Usuário encontrado, cadastro completado com sucesso' } 
+    #swagger.responses[200] = { description: 'Usuário encontardo, mas nenhuma alteração realizada no seu cadastro' } 
+    #swagger.responses[422] = { description: 'Parâmetros exigidos não estão sendo enviados no body' } 
+    #swagger.responses[404] = { description: 'Usuário não encontrado' } 
+    #swagger.responses[500] = { description: 'Erro no servidor' }
+  */
+  const {
+    userId,
+    role,
+    name,
+    birthdayDate,
+    cepResidencial,
+    nomeClinica,
+    CNPJCPFProfissional,
+    cepClinica,
+    enderecoClinica,
+    complementoClinica,
+    professionalSpecialities,
+    otherProfessionalSpecialities,
+    professionalServicePreferences,
+    userSpecialities,
+    userServicePreferences,
+    userAcessibilityPreferences,
+    profilePhoto,
+  } = req.body;
+
+  if (!role || (role != "paciente" && role != "profissional")) {
+    return res.status(422).json({
+      msg: "Tipo do usuário não está conforme o exigido ('paciente' ou 'profissional'), ou não está sendo enviado de forma correta no body",
+    });
+  }
+
+  if (!profilePhoto) {
+    const profilePhoto = null;
+  }
+  if (!userAcessibilityPreferences) {
+    const userAcessibilityPreferences = null;
+  }
+  if (!complementoClinica) {
+    const complementoClinica = null;
+  }
+  if (!otherProfessionalSpecialities) {
+    const otherProfessionalSpecialities = null;
+  }
+
+  if (role === "paciente") {
+    if (
+      !userId ||
+      !name ||
+      !birthdayDate ||
+      !userSpecialities ||
+      !userServicePreferences
+    ) {
+      return res.status(422).json({
+        msg: "Existem alguns parâmetros faltando para completar o cadastro do paciente",
+      });
+    }
+    const userExists = await User.findOne({ _id: userId });
+    console.log(userExists);
+    if (!userExists) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    const update = {
+      name,
+      birthdayDate: parseDateString(birthdayDate),
+      userSpecialities,
+      userServicePreferences,
+      profilePhoto,
+      userAcessibilityPreferences,
+    };
+
+    try {
+      const result = await User.updateOne({ _id: userId }, { $set: update });
+      console.log("Resultado da atualização:", result);
+      if (result.nModified > 0) {
+        const updatedUser = await User.findOne({ _id: userId });
+        console.log("Usuário atualizado:", updatedUser);
+        return res.status(201).json(updatedUser);
+      } else {
+        return res.status(200).json({ message: "Nenhuma alteração realizada" });
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }
+
+  if (
+    role === "profissional" &&
+    (!userId ||
+      !name ||
+      !birthdayDate ||
+      !cepResidencial ||
+      !nomeClinica ||
+      !CNPJCPFProfissional ||
+      !cepClinica ||
+      !enderecoClinica ||
+      !professionalSpecialities ||
+      !professionalServicePreferences)
+  ) {
+    return res.status(422).json({
+      msg: "Existem alguns parâmetros faltando para completar o cadastro do profissional",
+    });
+  }
+};
+
