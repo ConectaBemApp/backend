@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { checkUserEmailSendOTP, checkOTP } from './../controller/userController.mjs';
+import { checkUserEmailSendOTP, checkOTP, completeSignUp } from './../controller/userController.mjs';
 
 const router = express.Router();
 
@@ -21,6 +21,7 @@ router.use(cors(corsOptions));
 
 router.post('/auth/checkUserSendOTP', checkUserEmailSendOTP);
 router.post('/auth/checkOTP', checkOTP);
+router.post('/auth/createUser', completeSignUp)
 
 router.get('/', (req, res) => {
   /*
