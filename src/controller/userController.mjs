@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { User } from "../models/index.mjs";
 import { generateOTP } from "../utils/generateOTP.mjs";
 import { enviarEmail } from "../utils/sendEmail.mjs";
@@ -89,7 +90,6 @@ export const checkOTP = async (req, res) => {
   }
   try {
     const userExists = await User.findOne({ email: email });
-    await User.updateOne({ email }, { hashedOTP });
 
     const resultComparation = await bcrypt.compare(OTP, userExists.hashedOTP);
     console.log(`Comparação entre os OTPs: ${resultComparation}`);
@@ -108,8 +108,10 @@ export const checkOTP = async (req, res) => {
         message.email.exists = true;
         const accessToken = jwt.sign(message, config.ACCESS_TOKEN_SECRET);
         res.status(200).json({ accessToken: accessToken });
-      } else {
+      } else if (userExists.status === "pending") {
         res.status(200).json({ message });
+      } else {
+        res.status(401).json({ msg: "Parâmetro 'status' inválido!" });
       }
     } else {
       return res.status(401).json({ msg: "Código OTP está incorreto!" });
@@ -183,14 +185,18 @@ export const completeSignUp = async (req, res) => {
       });
     }
     const userExists = await User.findOne({ _id: userId });
-    console.log(userExists);
+    console.log(`Usuário encontrado com sucesso: ${userExists}`);
     if (!userExists) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
-
+    const parsedDate = parseDateString(birthdayDate);
+    if (parsedDate.error) {
+      console.log(parsedDate.error);
+      return res.status(400).json({ error: parsedDate.error });
+    }
     const update = {
       name,
-      birthdayDate: parseDateString(birthdayDate),
+      birthdayDate: parsedDate.result,
       userSpecialities,
       userServicePreferences,
       profilePhoto,
@@ -200,16 +206,37 @@ export const completeSignUp = async (req, res) => {
     try {
       const result = await User.updateOne({ _id: userId }, { $set: update });
       console.log("Resultado da atualização:", result);
-      if (result.nModified > 0) {
-        const updatedUser = await User.findOne({ _id: userId });
-        console.log("Usuário atualizado:", updatedUser);
-        return res.status(201).json(updatedUser);
+      if (result.modifiedCount > 0) {
+        // Encontre o usuário atualizado usando aggregate para remover _id e hashedOTP
+        const updatedUser = await User.aggregate([
+          { $match: { _id: new mongoose.Types.ObjectId(userId) } }, // Use 'new' aqui
+          {
+            $project: {
+              hashedOTP: 0, // Excluir hashedOTP
+            },
+          },
+        ]);
+
+        if (updatedUser.length === 0) {
+          return res.status(404).json({ error: "Usuário não encontrado" });
+        }
+
+        console.log("Payload para JWT:", updatedUser[0]);
+
+        // Gere o token JWT usando o objeto simples retornado pelo aggregate
+        const accessToken = jwt.sign(
+          updatedUser[0],
+          config.ACCESS_TOKEN_SECRET
+        );
+        return res.status(201).json({ accessToken: accessToken });
       } else {
-        return res.status(200).json({ message: "Nenhuma alteração realizada" });
+        return res
+          .status(500)
+          .json({ error: "Usuário já está cadastrado no banco de dados" });
       }
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      return res.status(500).json({ error: error.message });
     }
   }
 

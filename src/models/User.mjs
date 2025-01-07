@@ -22,10 +22,7 @@ const userSchema = new mongoose.Schema({
   birthdayDate: Date,
   cepResidencial: String,
   nomeClinica: String,
-  CNPJCPFProfissional: {
-    type: String,
-    unique: true,
-  },
+  CNPJCPFProfissional: String,
   cepClinica: String,
   enderecoClinica: String,
   complementoClinica: String,
