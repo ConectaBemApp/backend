@@ -231,3 +231,4 @@ export const completeSignUp = async (req, res) => {
     });
   }
 };
+
