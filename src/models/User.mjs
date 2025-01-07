@@ -5,7 +5,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
-    }, hashedOTP: {
+    }, 
+    hashedOTP: {
+        type: String,
+        required: true
+    },
+    status: {
         type: String,
         required: true
     }

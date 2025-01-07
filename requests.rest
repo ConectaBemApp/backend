@@ -1,0 +1,7 @@
+POST http://localhost:3000/auth/checkOTP
+Content-Type: application/json
+
+{
+    "email": "gustavomottadeveloper@gmail.com",
+    "OTP": "6845"
+}

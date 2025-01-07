@@ -34,8 +34,8 @@
         "tags": [
           "User"
         ],
-        "summary": "Envia o código OTP por e-mail",
-        "description": "Checa se o usuário já está cadastrado no sistema. Envia o código OTP para registro/login da conta no e-mail do usuário",
+        "summary": "Envia o código OTP para o e-mail enviado pelo body",
+        "description": "Envia o código OTP para registro/login da conta no e-mail enviado no body",
         "parameters": [
           {
             "name": "body",
