@@ -1,32 +1,24 @@
-import nodemailer from 'nodemailer';
+import config from './../config/config.mjs';
+import sgMail from '@sendgrid/mail';
 
-// Criar um objeto de transporte
-const transporter = nodemailer.createTransport({
-  host: 'sandbox.smtp.mailtrap.io',
-  port: 2525,
-  auth: {
-    user: 'd2861ed9284c81',
-    pass: '179b0cdde49fd3',
+sgMail.setApiKey(config.SENDGRID_API_KEY)
+
+export function enviarEmail(to, OTP) {
+  const msg = {
+    to: to,
+    from: 'contatoprojsj@gmail.com',
+    subject: 'Seu código de verificação',
+    text: `Seu código OTP está logo abaixo: ${OTP}`,
+    html: `<strong>Seu código OTP está logo abaixo: ${OTP}</strong>`,
   }
-});
-
-// Configurar o objeto mailOptions
-const mailOptions = {
-  from: 'gustavomottadeveloper@gmail.com',
-  to: 'gustavomottacardoso1@gmail.com',
-  subject: 'Enviando Email usando Node.js',
-  text: 'Isso foi fácil!'
-};
-
-// Enviar o email
-export const enviarEmail = (subject, text) => {
-  mailOptions.subject = subject;
-  mailOptions.text = text;
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log('Erro:', error);
-    } else {
-      console.log('Email enviado: ' + info.response);
-    }
-  });
+  try {
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+      })
+  } catch (err) {
+    console.error(err);
+  }
 }
+

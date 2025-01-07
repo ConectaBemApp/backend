@@ -2,13 +2,16 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "ConectaBem Back-end APIs",
+    "title": "ConectaBem APIs",
     "description": "APIs para o projeto ConectaBem"
   },
   "host": "localhost:3000",
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": [
+        "http://localhost:3000",
+        "https://conectabemback.onrender.com"
+      ]
     }
   ],
   "basePath": "/",
@@ -31,8 +34,8 @@
         "tags": [
           "User"
         ],
-        "summary": "Envia o código OTP por e-mail",
-        "description": "Checa se o usuário já está cadastrado no sistema. Envia o código OTP para registro/login da conta no e-mail do usuário",
+        "summary": "Envia o código OTP para o e-mail enviado pelo body",
+        "description": "Envia o código OTP para registro/login da conta no e-mail enviado no body",
         "parameters": [
           {
             "name": "body",
@@ -115,14 +118,6 @@
             "description": "OK"
           }
         }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
       }
     }
   }
