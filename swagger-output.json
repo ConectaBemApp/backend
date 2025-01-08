@@ -109,7 +109,7 @@
         }
       }
     },
-    "/auth/craetePatient": {
+    "/auth/createPatient": {
       "post": {
         "tags": [
           "User"
@@ -148,7 +148,7 @@
         }
       }
     },
-    "/auth/craeteProfessional": {
+    "/auth/createProfessional": {
       "post": {
         "tags": [
           "User"

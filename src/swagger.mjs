@@ -23,7 +23,7 @@ const doc = {
   ],
   host: "localhost:3000",
   basePath: "/",
-  schemes: ["http"],
+  schemes: ["https"],
   definitions: {
     AddUserPaciente: {
       $userId: 1234,
