@@ -14,10 +14,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  role: {
-    type: String,
-    enum: ["paciente", "profissional"], // Assegura que o valor do role seja um dos dois
-  },
   name: String,
   birthdayDate: Date,
   cepResidencial: String,

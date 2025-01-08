@@ -97,6 +97,9 @@
           "401": {
             "description": "Códigos OTP não coincidem"
           },
+          "404": {
+            "description": "Não Encontrado"
+          },
           "422": {
             "description": "Parâmetros exigidos não estão sendo enviados no body"
           },
@@ -106,72 +109,20 @@
         }
       }
     },
-    "/auth/createUser": {
+    "/auth/craetePatient": {
       "post": {
         "tags": [
           "User"
         ],
-        "summary": "Completa o cadastro do usuário no backend",
-        "description": "Completa o cadastro do usuário (paciente ou profissional) de acordo com as suas respectivas características",
+        "summary": "Completa o cadastro do paciente",
+        "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "Criar novo paciente.",
             "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                },
-                "role": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                },
-                "birthdayDate": {
-                  "example": "any"
-                },
-                "cepResidencial": {
-                  "example": "any"
-                },
-                "nomeClinica": {
-                  "example": "any"
-                },
-                "CNPJCPFProfissional": {
-                  "example": "any"
-                },
-                "cepClinica": {
-                  "example": "any"
-                },
-                "enderecoClinica": {
-                  "example": "any"
-                },
-                "complementoClinica": {
-                  "example": "any"
-                },
-                "professionalSpecialities": {
-                  "example": "any"
-                },
-                "otherProfessionalSpecialities": {
-                  "example": "any"
-                },
-                "professionalServicePreferences": {
-                  "example": "any"
-                },
-                "userSpecialities": {
-                  "example": "any"
-                },
-                "userServicePreferences": {
-                  "example": "any"
-                },
-                "userAcessibilityPreferences": {
-                  "example": "any"
-                },
-                "profilePhoto": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/AddUserPaciente"
             }
           }
         ],
@@ -184,6 +135,48 @@
           },
           "400": {
             "description": "Solicitação Inválida"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          },
+          "422": {
+            "description": "Parâmetros exigidos não estão sendo enviados no body"
+          },
+          "500": {
+            "description": "Erro no servidor"
+          }
+        }
+      }
+    },
+    "/auth/craeteProfessional": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Completa o cadastro do profissional",
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Criar novo paciente.",
+            "schema": {
+              "$ref": "#/definitions/AddUserProfessional"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontardo, mas nenhuma alteração realizada no seu cadastro"
+          },
+          "201": {
+            "description": "Usuário encontrado, cadastro completado com sucesso"
+          },
+          "400": {
+            "description": "Solicitação Inválida"
+          },
+          "403": {
+            "description": "Acesso Negado"
           },
           "404": {
             "description": "Usuário não encontrado"
@@ -210,6 +203,153 @@
           }
         }
       }
+    }
+  },
+  "definitions": {
+    "AddUserPaciente": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "number",
+          "example": 1234
+        },
+        "name": {
+          "type": "string",
+          "example": "Thiago Cabral"
+        },
+        "birthdayDate": {
+          "type": "string",
+          "example": "20/12/2003"
+        },
+        "userSpecialities": {
+          "type": "array",
+          "example": [
+            "Acumputura",
+            "Aromaterapia"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "userServicePreferences": {
+          "type": "array",
+          "example": [
+            "LGBTQIA+ Friendly",
+            "Pet Friendly"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "userAcessibilityPreferences": {
+          "type": "array",
+          "example": [
+            "Atendimento em Libras",
+            "Audiodescrição"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "profilePhoto": {
+          "type": "string",
+          "example": "https://www.url/url"
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "birthdayDate",
+        "userSpecialities",
+        "userServicePreferences"
+      ]
+    },
+    "AddUserProfessional": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "number",
+          "example": 1234
+        },
+        "name": {
+          "type": "string",
+          "example": "Ronaldinho Gaúcho"
+        },
+        "birthdayDate": {
+          "type": "string",
+          "example": "20/12/2003"
+        },
+        "cepResidencial": {
+          "type": "string",
+          "example": "12345-678"
+        },
+        "nomeClinica": {
+          "type": "string",
+          "example": "Clinica do seu José"
+        },
+        "CNPJCPFProfissional": {
+          "type": "string",
+          "example": "123.456.789-10"
+        },
+        "cepClinica": {
+          "type": "string",
+          "example": "12345-678"
+        },
+        "enderecoClinica": {
+          "type": "string",
+          "example": "Rua Perto da Qui"
+        },
+        "complementoClinica": {
+          "type": "string",
+          "example": "Casa"
+        },
+        "professionalSpecialities": {
+          "type": "array",
+          "example": [
+            "Acumputura",
+            "Aromaterapia"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "otherProfessionalSpecialities": {
+          "type": "array",
+          "example": [
+            "Yoga na água",
+            "Corrente russa"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "professionalServicePreferences": {
+          "type": "array",
+          "example": [
+            "LGBTQIA+ Friendly",
+            "Pet Friendly"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "profilePhoto": {
+          "type": "string",
+          "example": "https://www.url/url"
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "birthdayDate",
+        "cepResidencial",
+        "nomeClinica",
+        "CNPJCPFProfissional",
+        "cepClinica",
+        "enderecoClinica",
+        "professionalSpecialities",
+        "professionalServicePreferences"
+      ]
     }
   }
 }

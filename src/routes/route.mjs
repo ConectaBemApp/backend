@@ -3,17 +3,15 @@ import cors from "cors";
 import {
   checkUserEmailSendOTP,
   checkOTP,
-  completeSignUp,
+  completeSignUpPatient,
+  completeSignUpProfessional,
 } from "./../controller/userController.mjs";
 
 const router = express.Router();
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = [
-      "https://backend-ofx7.onrender.com",
-      "http://localhost:3000",
-    ];
+    const allowedOrigins = ["https://backend-ofx7.onrender.com", "http://localhost:3000"];
 
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
@@ -29,7 +27,8 @@ router.use(express.json());
 
 router.post("/auth/checkUserSendOTP", checkUserEmailSendOTP);
 router.post("/auth/checkOTP", checkOTP);
-router.post("/auth/createUser", completeSignUp);
+router.post("/auth/craetePatient", completeSignUpPatient);
+router.post("/auth/craeteProfessional", completeSignUpProfessional);
 
 router.get("/", (req, res) => {
   /*

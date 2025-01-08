@@ -90,6 +90,9 @@ export const checkOTP = async (req, res) => {
   }
   try {
     const userExists = await User.findOne({ email: email });
+    if (!userExists) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
 
     const resultComparation = await bcrypt.compare(OTP, userExists.hashedOTP);
     console.log(`Comparação entre os OTPs: ${resultComparation}`);
@@ -122,20 +125,112 @@ export const checkOTP = async (req, res) => {
   }
 };
 
-export const completeSignUp = async (req, res) => {
+export const completeSignUpPatient = async (req, res) => {
   /*
     #swagger.tags = ['User']
-    #swagger.summary = 'Completa o cadastro do usuário no backend'
-    #swagger.description = 'Completa o cadastro do usuário (paciente ou profissional) de acordo com as suas respectivas características'
+    #swagger.summary = 'Completa o cadastro do paciente'
     #swagger.responses[201] = { description: 'Usuário encontrado, cadastro completado com sucesso' } 
     #swagger.responses[200] = { description: 'Usuário encontardo, mas nenhuma alteração realizada no seu cadastro' } 
     #swagger.responses[422] = { description: 'Parâmetros exigidos não estão sendo enviados no body' } 
     #swagger.responses[404] = { description: 'Usuário não encontrado' } 
     #swagger.responses[500] = { description: 'Erro no servidor' }
+    #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Criar novo paciente.',
+            schema: { $ref: '#/definitions/AddUserPaciente' }
+    }
   */
+
   const {
     userId,
-    role,
+    name,
+    birthdayDate,
+    userSpecialities,
+    userServicePreferences,
+    userAcessibilityPreferences,
+    profilePhoto,
+  } = req.body;
+
+  if (!userId || !name || !birthdayDate || !userSpecialities || !userServicePreferences) {
+    return res.status(422).json({
+      msg: "Existem alguns parâmetros faltando para completar o cadastro do paciente",
+    });
+  }
+
+  const userExists = await User.findOne({ _id: userId });
+  if (!userExists) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+  console.log(`Usuário encontrado com sucesso: ${userExists}`);
+
+  const parsedDate = parseDateString(birthdayDate);
+  if (parsedDate.error) {
+    console.log(parsedDate.error);
+    return res.status(400).json({ error: parsedDate.error });
+  }
+  const update = {
+    name,
+    birthdayDate: parsedDate.result,
+    userSpecialities,
+    userServicePreferences,
+  };
+  if (userAcessibilityPreferences !== undefined) {
+    update.userAcessibilityPreferences = userAcessibilityPreferences;
+  }
+  if (profilePhoto !== undefined) {
+    update.profilePhoto = profilePhoto;
+  }
+
+  try {
+    const result = await User.updateOne({ _id: userId }, { $set: update });
+    console.log("Resultado da atualização:", result);
+    if (result.modifiedCount > 0) {
+      // Encontre o usuário atualizado usando aggregate para remover _id e hashedOTP
+      const updatedUser = await User.aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(userId) } }, // Use 'new' aqui
+        {
+          $project: {
+            hashedOTP: 0, // Excluir hashedOTP
+          },
+        },
+      ]);
+
+      if (updatedUser.length === 0) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
+      console.log("Payload para JWT:", updatedUser[0]);
+
+      // Gere o token JWT usando o objeto simples retornado pelo aggregate
+      const accessToken = jwt.sign(updatedUser[0], config.ACCESS_TOKEN_SECRET);
+      return res.status(201).json({ accessToken: accessToken });
+    } else {
+      return res.status(500).json({ error: "Usuário já está cadastrado no banco de dados" });
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar usuário:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const completeSignUpProfessional = async (req, res) => {
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Completa o cadastro do profissional'
+    #swagger.responses[201] = { description: 'Usuário encontrado, cadastro completado com sucesso' } 
+    #swagger.responses[200] = { description: 'Usuário encontardo, mas nenhuma alteração realizada no seu cadastro' } 
+    #swagger.responses[422] = { description: 'Parâmetros exigidos não estão sendo enviados no body' } 
+    #swagger.responses[404] = { description: 'Usuário não encontrado' } 
+    #swagger.responses[500] = { description: 'Erro no servidor' }
+    #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Criar novo paciente.',
+            schema: { $ref: '#/definitions/AddUserProfessional' }
+    }
+  */
+
+  const {
+    userId,
     name,
     birthdayDate,
     cepResidencial,
@@ -144,117 +239,91 @@ export const completeSignUp = async (req, res) => {
     cepClinica,
     enderecoClinica,
     complementoClinica,
-    professionalSpecialities,
+    profissionalSpecialities,
     otherProfessionalSpecialities,
-    professionalServicePreferences,
-    userSpecialities,
-    userServicePreferences,
-    userAcessibilityPreferences,
+    profissionalServicePreferences,
     profilePhoto,
   } = req.body;
 
-  if (!role || (role != "paciente" && role != "profissional")) {
-    return res.status(422).json({
-      msg: "Tipo do usuário não está conforme o exigido ('paciente' ou 'profissional'), ou não está sendo enviado de forma correta no body",
-    });
-  }
-
-  if (!profilePhoto) {
-    const profilePhoto = null;
-  }
-  if (!userAcessibilityPreferences) {
-    const userAcessibilityPreferences = null;
-  }
-  if (!complementoClinica) {
-    const complementoClinica = null;
-  }
-  if (!otherProfessionalSpecialities) {
-    const otherProfessionalSpecialities = null;
-  }
-
-  if (role === "paciente") {
-    if (
-      !userId ||
-      !name ||
-      !birthdayDate ||
-      !userSpecialities ||
-      !userServicePreferences
-    ) {
-      return res.status(422).json({
-        msg: "Existem alguns parâmetros faltando para completar o cadastro do paciente",
-      });
-    }
-    const userExists = await User.findOne({ _id: userId });
-    console.log(`Usuário encontrado com sucesso: ${userExists}`);
-    if (!userExists) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
-    }
-    const parsedDate = parseDateString(birthdayDate);
-    if (parsedDate.error) {
-      console.log(parsedDate.error);
-      return res.status(400).json({ error: parsedDate.error });
-    }
-    const update = {
-      name,
-      birthdayDate: parsedDate.result,
-      userSpecialities,
-      userServicePreferences,
-      profilePhoto,
-      userAcessibilityPreferences,
-    };
-
-    try {
-      const result = await User.updateOne({ _id: userId }, { $set: update });
-      console.log("Resultado da atualização:", result);
-      if (result.modifiedCount > 0) {
-        // Encontre o usuário atualizado usando aggregate para remover _id e hashedOTP
-        const updatedUser = await User.aggregate([
-          { $match: { _id: new mongoose.Types.ObjectId(userId) } }, // Use 'new' aqui
-          {
-            $project: {
-              hashedOTP: 0, // Excluir hashedOTP
-            },
-          },
-        ]);
-
-        if (updatedUser.length === 0) {
-          return res.status(404).json({ error: "Usuário não encontrado" });
-        }
-
-        console.log("Payload para JWT:", updatedUser[0]);
-
-        // Gere o token JWT usando o objeto simples retornado pelo aggregate
-        const accessToken = jwt.sign(
-          updatedUser[0],
-          config.ACCESS_TOKEN_SECRET
-        );
-        return res.status(201).json({ accessToken: accessToken });
-      } else {
-        return res
-          .status(500)
-          .json({ error: "Usuário já está cadastrado no banco de dados" });
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar usuário:", error);
-      return res.status(500).json({ error: error.message });
-    }
-  }
-
   if (
-    role === "profissional" &&
-    (!userId ||
-      !name ||
-      !birthdayDate ||
-      !cepResidencial ||
-      !nomeClinica ||
-      !CNPJCPFProfissional ||
-      !cepClinica ||
-      !enderecoClinica ||
-      !professionalSpecialities ||
-      !professionalServicePreferences)
+    !userId ||
+    !name ||
+    !birthdayDate ||
+    !cepResidencial ||
+    !nomeClinica ||
+    !CNPJCPFProfissional ||
+    !cepClinica ||
+    !enderecoClinica ||
+    !profissionalSpecialities ||
+    !profissionalServicePreferences
   ) {
     return res.status(422).json({
       msg: "Existem alguns parâmetros faltando para completar o cadastro do profissional",
     });
+  }
+
+  const userExists = await User.findOne({ _id: userId });
+  console.log(`Usuário encontrado com sucesso: ${userExists}`);
+  if (!userExists) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  const parsedDate = parseDateString(birthdayDate);
+  if (parsedDate.error) {
+    console.log(parsedDate.error);
+    return res.status(400).json({ error: parsedDate.error });
+  }
+
+  const update = {
+    name,
+    birthdayDate: parsedDate.result,
+    cepResidencial,
+    nomeClinica,
+    CNPJCPFProfissional,
+    cepClinica,
+    enderecoClinica,
+    profissionalSpecialities,
+    profissionalServicePreferences,
+  };
+
+  if (complementoClinica !== undefined) {
+    update.complementoClinica = complementoClinica;
+  }
+  if (otherProfessionalSpecialities !== undefined) {
+    update.otherProfessionalSpecialities = otherProfessionalSpecialities;
+  }
+  if (profilePhoto !== undefined) {
+    update.profilePhoto = profilePhoto;
+  }
+
+  try {
+    const result = await User.updateOne({ _id: userId }, { $set: update });
+    console.log("Resultado da atualização:", result);
+    if (result.modifiedCount > 0) {
+      // Encontre o usuário atualizado usando aggregate para remover _id e hashedOTP
+      const updatedUser = await User.aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(userId) } }, // Use 'new' aqui
+        {
+          $project: {
+            hashedOTP: 0, // Excluir hashedOTP
+          },
+        },
+      ]);
+
+      if (updatedUser.length === 0) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
+      console.log("Payload para JWT:", updatedUser[0]);
+
+      // Gere o token JWT usando o objeto simples retornado pelo aggregate
+      const accessToken = jwt.sign(updatedUser[0], config.ACCESS_TOKEN_SECRET);
+      return res.status(201).json({ accessToken: accessToken });
+    } else {
+      return res.status(403).json({ error: "Usuário já está cadastrado no banco de dados" });
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar usuário:", error);
+    return res.status(500).json({ error: error.message });
   }
 };

@@ -2,7 +2,7 @@ POST http://localhost:3000/auth/checkUserSendOTP
 Content-Type: application/json
 
 {
-    "email": "gustavomottacardoso1@gmail.com"
+    "email": "gustavomottadeveloper@gmail.com"
 }
 
 ###
@@ -11,20 +11,35 @@ POST http://localhost:3000/auth/checkOTP
 Content-Type: application/json
 
 {
-    "email": "gustavomottacardoso1@gmail.com",
-    "OTP": "7529"
+    "email": "gustavomottadeveloper@gmail.com",
+    "OTP": "5362"
 } 
 
 ###
 
-POST http://localhost:3000/auth/createUser
+POST http://localhost:3000/auth/craetePatient
 Content-Type: application/json
 
 {
-    "role": "paciente",
-    "userId": "677d85c7ebbe9b584d4a42db",
-    "name": "Gustavo Mottaaddfdasddfdddfdddfdffdsdfdff",
+    "userId": "677f05cce5b9f510b672dbe3",
+    "name": "Gustavo Mdottaaddfdasddfdddfdddfdffdsdfdff",
     "birthdayDate": "20/12/2003",
     "userSpecialities": "Massoterapia",
     "userServicePreferences": "Pet"
+} 
+###
+POST http://localhost:3000/auth/craeteProfessional
+Content-Type: application/json
+
+{
+    "userId": "677f05cce5b9f510b672dbe3",
+    "name": "Gustavo Mottaaddfdasddfdddfdddfdffdsdfdff",
+    "birthdayDate": "20/12/2003",
+    "cepResidencial": "13299-212",
+    "nomeClinica": "Clinica tal",
+    "CNPJCPFProfissional": "123.456.789-10",
+    "cepClinica": "13299-123",
+    "enderecoClinica": "Rua tal",
+    "profissionalSpecialities": "dkfjadksfj",
+    "profissionalServicePreferences": "kdfjkjadf"
 } 
