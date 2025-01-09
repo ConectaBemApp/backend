@@ -2,7 +2,6 @@ import swaggerAutogen from "swagger-autogen";
 
 let host;
 let schemes;
-
 if (process.env.NODE_ENV === "production") {
   host = "backend-ofx7.onrender.com";
   schemes = ["https"];
@@ -17,10 +16,7 @@ const doc = {
     title: "ConectaBem APIs",
     description: "APIs para o projeto ConectaBem",
   },
-  servers: [
-    { url: "http://localhost:3000", description: "Local" },
-    { url: "https://backend-ofx7.onrender.com", description: "Production" },
-  ],
+  servers: [{ url: "http://localhost:3000" }, { url: "https://backend-ofx7.onrender.com" }],
   tags: [
     {
       name: "User",
