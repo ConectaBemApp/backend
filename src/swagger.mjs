@@ -17,7 +17,7 @@ const doc = {
       description: "Endpoints de teste",
     },
   ],
-  host: "https://backend-ofx7.onrender.com",
+  host: "backend-ofx7.onrender.com",
   basePath: "/",
   schemes: ["http", "https"],
   definitions: {
