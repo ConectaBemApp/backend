@@ -5,7 +5,7 @@
     "title": "ConectaBem APIs",
     "description": "APIs para o projeto ConectaBem"
   },
-  "host": "backend-ofx7.onrender.com",
+  "host": "localhost:3000",
   "servers": [
     {
       "url": "http://localhost:3000"
@@ -26,7 +26,6 @@
     }
   ],
   "schemes": [
-    "https",
     "http"
   ],
   "paths": {
