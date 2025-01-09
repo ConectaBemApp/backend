@@ -6,11 +6,7 @@ const doc = {
     title: "ConectaBem APIs",
     description: "APIs para o projeto ConectaBem",
   },
-  servers: [
-    {
-      url: ["http://localhost:3000", "https://conectabemback.onrender.com"],
-    },
-  ],
+  servers: [{ url: "http://localhost:3000" }, { url: "https://conectabemback.onrender.com" }],
   tags: [
     {
       name: "User",
@@ -21,9 +17,9 @@ const doc = {
       description: "Endpoints de teste",
     },
   ],
-  host: "localhost:3000",
+  host: "conectabemback.onrender.com",
   basePath: "/",
-  schemes: ["https"],
+  schemes: ["http", "https"],
   definitions: {
     AddUserPaciente: {
       $userId: 1234,
