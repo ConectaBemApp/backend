@@ -29,7 +29,7 @@
     "http"
   ],
   "paths": {
-    "/auth/checkUserSendOTP": {
+    "/auth/sendOTP": {
       "post": {
         "tags": [
           "User"
@@ -190,7 +190,7 @@
         }
       }
     },
-    "/": {
+    "/teste": {
       "get": {
         "tags": [
           "Test"

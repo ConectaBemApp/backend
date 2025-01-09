@@ -25,12 +25,12 @@ const corsOptions = {
 router.use(cors(corsOptions));
 router.use(express.json());
 
-router.post("/auth/checkUserSendOTP", checkUserEmailSendOTP);
+router.post("/auth/sendOTP", checkUserEmailSendOTP);
 router.post("/auth/checkOTP", checkOTP);
 router.post("/auth/createPatient", completeSignUpPatient);
 router.post("/auth/createProfessional", completeSignUpProfessional);
 
-router.get("/", (req, res) => {
+router.get("/teste", (req, res) => {
   /*
     #swagger.tags = ['Test']
     #swagger.summary = 'Teste para verificar se API está funcionando'

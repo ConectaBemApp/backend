@@ -1,4 +1,9 @@
-POST https://backend-ofx7.onrender.com/auth/checkUserSendOTP
+GET http://localhost:3000/teste
+Content-Type: application/json
+
+###
+
+POST http://localhost:3000/auth/checkUserSendOTP
 Content-Type: application/json
 
 {

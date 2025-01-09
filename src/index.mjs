@@ -10,9 +10,6 @@ app.use(express.json());
 
 app.use("/doc", swaggerUI.serve, swaggerUI.setup(swaggerFile));
 app.use("/", router);
-app.get('/', (req, res) => {
-  res.send('Successful response.');
-});
 
 mongoose
   .connect(
