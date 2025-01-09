@@ -5,7 +5,7 @@
     "title": "ConectaBem APIs",
     "description": "APIs para o projeto ConectaBem"
   },
-  "host": "conectabemback.onrender.com",
+  "host": "backend-ofx7.onrender.com",
   "servers": [
     {
       "url": "http://localhost:3000"
@@ -26,8 +26,8 @@
     }
   ],
   "schemes": [
-    "http",
-    "https"
+    "https",
+    "http"
   ],
   "paths": {
     "/auth/checkUserSendOTP": {

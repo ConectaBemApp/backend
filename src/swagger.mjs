@@ -1,12 +1,26 @@
 import swaggerAutogen from "swagger-autogen";
 
+let host;
+let schemes;
+
+if (process.env.NODE_ENV === "production") {
+  host = "backend-ofx7.onrender.com";
+  schemes = ["https"];
+} else {
+  host = "localhost:3000";
+  schemes = ["http"];
+}
+
 const doc = {
   info: {
     version: "1.0.0",
     title: "ConectaBem APIs",
     description: "APIs para o projeto ConectaBem",
   },
-  servers: [{ url: "http://localhost:3000" }, { url: "https://backend-ofx7.onrender.com" }],
+  servers: [
+    { url: "http://localhost:3000", description: "Local" },
+    { url: "https://backend-ofx7.onrender.com", description: "Production" },
+  ],
   tags: [
     {
       name: "User",
@@ -17,9 +31,9 @@ const doc = {
       description: "Endpoints de teste",
     },
   ],
-  host: "backend-ofx7.onrender.com",
+  host: host,
   basePath: "/",
-  schemes: ["http", "https"],
+  schemes: schemes,
   definitions: {
     AddUserPaciente: {
       $userId: 1234,
