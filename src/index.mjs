@@ -8,7 +8,7 @@ import config from './config/config.mjs';
 const app = express();
 app.use(express.json());
 
-app.use("/doc", swaggerUI.serve, swaggerUI.setup(swaggerFile));
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerFile));
 app.use("/", router);
 
 mongoose

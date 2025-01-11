@@ -3,7 +3,7 @@ import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(config.SENDGRID_API_KEY)
 
-export function enviarEmail(to, OTP) {
+export function sendEmail(to, OTP) {
   const msg = {
     to: to,
     from: 'contatoprojsj@gmail.com',

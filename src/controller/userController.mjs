@@ -3,7 +3,7 @@ import { User } from "../models/index.mjs";
 import { generateOTP } from "../utils/generateOTP.mjs";
 import { enviarEmail } from "../utils/sendEmail.mjs";
 import bcrypt from "bcrypt";
-import testEmail from "../utils/regexValidations.mjs";
+import testEmail from "../utils/testEmailSyntax.mjs";
 import config from "../config/config.mjs";
 import jwt from "jsonwebtoken";
 import { parseDateString } from "../utils/parseDateString.mjs";

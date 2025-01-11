@@ -6,13 +6,18 @@ export function parseDateString(dateString) {
 
   try {
     const [day, month, year] = dateString.split("/");
-    const date = new Date(year, month - 1, day);
+
+    if (month > 12 || day > 31) {
+      return { error: "Formato de data inválido. Use DD/MM/AAAA." };
+    }
+
+    const date = new Date(Date.UTC(year, month - 1, day));
 
     if (isNaN(date)) {
       return { error: "Data inválida." };
     }
 
-    return { result: date };
+    return { date };
   } catch (error) {
     return { error: "Erro ao parsear a data: " + error.message };
   }
