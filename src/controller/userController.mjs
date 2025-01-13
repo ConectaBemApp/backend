@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { User } from "../models/index.mjs";
 import { generateOTP } from "../utils/generateOTP.mjs";
-import { enviarEmail } from "../utils/sendEmail.mjs";
+import { sendEmail } from "../utils/sendEmail.mjs";
 import bcrypt from "bcrypt";
-import testEmail from "../utils/testEmailSyntax.mjs";
+import { testEmailSyntax } from "../utils/testEmailSyntax.mjs";
 import config from "../config/config.mjs";
 import jwt from "jsonwebtoken";
 import { parseDateString } from "../utils/parseDateString.mjs";
@@ -28,7 +28,7 @@ export const checkUserEmailSendOTP = async (req, res) => {
   }
   try {
     const OTP = generateOTP();
-    enviarEmail(email, OTP);
+    sendEmail(email, OTP);
 
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedOTP = await bcrypt.hash(String(OTP), salt);
