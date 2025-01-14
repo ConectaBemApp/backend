@@ -11,7 +11,7 @@ jobs:
       - name: Using Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 20.
+          node-version: 20.x
       - name: run install and test
         run: |
           npm install
