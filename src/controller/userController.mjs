@@ -23,9 +23,12 @@ export const checkUserEmailSendOTP = async (req, res) => {
   */
   const { email } = req.body;
 
-  if (!email || testEmail(email) === false) {
+  if (!email || testEmailSyntax(email) === false) {
     return res.status(422).json({ message: "Um e-mail é exigido" });
   }
+
+  console.log("Email válido recebido:", email); // Log para verificar
+
   try {
     const OTP = generateOTP();
     sendEmail(email, OTP);
@@ -33,15 +36,17 @@ export const checkUserEmailSendOTP = async (req, res) => {
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedOTP = await bcrypt.hash(String(OTP), salt);
 
-    console.log(`OTP gerado ${OTP}, hashed OTP: ${hashedOTP}`);
+    console.log(`OTP gerado: ${OTP}, hashed OTP: ${hashedOTP}`); // Log para verificar
 
     const userExists = await User.findOne({ email: email });
+    console.log("Usuário existente:", userExists); // Log para verificar
     if (!userExists) {
       const result = await User.create({
         email: email,
         hashedOTP: hashedOTP,
         status: "pending",
       });
+      console.log("Usuário criado:", result); // Log para verificar
       console.log(result);
 
       return res.status(201).json({
@@ -55,6 +60,7 @@ export const checkUserEmailSendOTP = async (req, res) => {
       });
     } else {
       await User.updateOne({ email }, { hashedOTP });
+      console.log("OTP do usuário atualizado"); // Log para verificar
       console.log("User OTP updated");
       return res.status(200).json({
         id: userExists._id,
@@ -83,7 +89,7 @@ export const checkOTP = async (req, res) => {
 */
 
   const { email, OTP } = req.body;
-  if (!email || !OTP || testEmail(email) === false) {
+  if (!email || !OTP || testEmailSyntax(email) === false) {
     return res.status(422).json({
       msg: "Parâmetros exigidos não estão sendo enviados ou não estão sendo enviados de forma correta no body",
     });
