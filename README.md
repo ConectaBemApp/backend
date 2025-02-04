@@ -1,4 +1,5 @@
 # ConectaBem APIs
+
 ## Projeto Node.js com MongoDB e Express
 
 Este projeto é um exemplo de API RESTful usando Node.js, Express, MongoDB e Mongoose. Ele inclui funcionalidades para verificar se um e-mail de usuário está registrado, enviar e verificar OTPs, e manusear variáveis de ambiente com `dotenv`.
@@ -14,17 +15,11 @@ Este projeto é um exemplo de API RESTful usando Node.js, Express, MongoDB e Mon
 1. Clone o repositório:
 
 ```sh
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/ConectaBemApp/backend.git
+cd backend
 ```
 
-2. Instale as dependências
-
-```sh
-npm install 
-```
-
-3. Crie um arquivo .env com as suas respectivas variáveis de ambiente
+2. Crie um arquivo .env com as suas respectivas variáveis de ambiente
 
 ```sh
 DB_USER=seu_usuario
@@ -33,4 +28,17 @@ SENDGRID_API_KEY=apikey
 PORT=3000
 ACCESS_TOKEN_SECRET=JWT_ACCESS_TOKEN_SECRET
 REFRESH_TOKEN_SECRET=JWT_REFRESH_TOKEN_SECRET
+```
+
+3. Construa a imagem Docker:
+
+```sh
+docker build -t conectabem .
+docker run -it --rm -p 3000:3000 conectabem
+```
+
+4. Acesse sua aplicação:
+
+```sh
+http://localhost:3000/docs
 ```
