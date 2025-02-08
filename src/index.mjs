@@ -9,6 +9,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerFile));
+app.get("/", (req, res) => { res.redirect('/docs');});
 app.use("/", router);
 
 mongoose
