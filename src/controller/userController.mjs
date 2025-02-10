@@ -27,7 +27,7 @@ export const checkUserEmailSendOTP = async (req, res) => {
     return res.status(422).json({ message: "Um e-mail é exigido" });
   }
 
-  console.log("Email válido recebido:", email); // Log para verificar
+  console.log("Email válido recebido:", email);
 
   try {
     const OTP = generateOTP();
@@ -36,17 +36,17 @@ export const checkUserEmailSendOTP = async (req, res) => {
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedOTP = await bcrypt.hash(String(OTP), salt);
 
-    console.log(`OTP gerado: ${OTP}, hashed OTP: ${hashedOTP}`); // Log para verificar
+    console.log(`OTP gerado: ${OTP}, hashed OTP: ${hashedOTP}`);
 
     const userExists = await User.findOne({ email: email });
-    console.log("Usuário existente:", userExists); // Log para verificar
+    console.log("Usuário existente:", userExists);
     if (!userExists) {
       const result = await User.create({
         email: email,
         hashedOTP: hashedOTP,
         status: "pending",
       });
-      console.log("Usuário criado:", result); // Log para verificar
+      console.log("Usuário criado:", result);
       console.log(result);
 
       return res.status(201).json({
@@ -60,8 +60,7 @@ export const checkUserEmailSendOTP = async (req, res) => {
       });
     } else {
       await User.updateOne({ email }, { hashedOTP });
-      console.log("OTP do usuário atualizado"); // Log para verificar
-      console.log("User OTP updated");
+      console.log("OTP do usuário atualizado");
       return res.status(200).json({
         id: userExists._id,
         email: {
@@ -179,6 +178,7 @@ export const completeSignUpPatient = async (req, res) => {
     birthdayDate: parsedDate.result,
     userSpecialities,
     userServicePreferences,
+    userType: "patient",
   };
   if (userAcessibilityPreferences !== undefined) {
     update.userAcessibilityPreferences = userAcessibilityPreferences;
@@ -191,15 +191,7 @@ export const completeSignUpPatient = async (req, res) => {
     const result = await User.updateOne({ _id: userId }, { $set: update });
     console.log("Resultado da atualização:", result);
     if (result.modifiedCount > 0) {
-      // Encontre o usuário atualizado usando aggregate para remover _id e hashedOTP
-      const updatedUser = await User.aggregate([
-        { $match: { _id: new mongoose.Types.ObjectId(userId) } }, // Use 'new' aqui
-        {
-          $project: {
-            hashedOTP: 0, // Excluir hashedOTP
-          },
-        },
-      ]);
+      const updatedUser = await User.findOne([{ _id: { $in: [userId] } }, { hashedOTP: 0 }]);
 
       if (updatedUser.length === 0) {
         return res.status(404).json({ error: "Usuário não encontrado" });
@@ -207,7 +199,6 @@ export const completeSignUpPatient = async (req, res) => {
 
       console.log("Payload para JWT:", updatedUser[0]);
 
-      // Gere o token JWT usando o objeto simples retornado pelo aggregate
       const accessToken = jwt.sign(updatedUser[0], config.ACCESS_TOKEN_SECRET);
       return res.status(201).json({ accessToken: accessToken });
     } else {
@@ -290,6 +281,7 @@ export const completeSignUpProfessional = async (req, res) => {
     enderecoClinica,
     profissionalSpecialities,
     profissionalServicePreferences,
+    userType: "professional",
   };
 
   if (complementoClinica !== undefined) {
@@ -306,15 +298,7 @@ export const completeSignUpProfessional = async (req, res) => {
     const result = await User.updateOne({ _id: userId }, { $set: update });
     console.log("Resultado da atualização:", result);
     if (result.modifiedCount > 0) {
-      // Encontre o usuário atualizado usando aggregate para remover _id e hashedOTP
-      const updatedUser = await User.aggregate([
-        { $match: { _id: new mongoose.Types.ObjectId(userId) } }, // Use 'new' aqui
-        {
-          $project: {
-            hashedOTP: 0, // Excluir hashedOTP
-          },
-        },
-      ]);
+      const updatedUser = await User.findOne([{ _id: { $in: [userId] } }, { hashedOTP: 0 }]);
 
       if (updatedUser.length === 0) {
         return res.status(404).json({ error: "Usuário não encontrado" });
@@ -322,7 +306,6 @@ export const completeSignUpProfessional = async (req, res) => {
 
       console.log("Payload para JWT:", updatedUser[0]);
 
-      // Gere o token JWT usando o objeto simples retornado pelo aggregate
       const accessToken = jwt.sign(updatedUser[0], config.ACCESS_TOKEN_SECRET);
       return res.status(201).json({ accessToken: accessToken });
     } else {
@@ -331,5 +314,96 @@ export const completeSignUpProfessional = async (req, res) => {
   } catch (error) {
     console.error("Erro ao atualizar usuário:", error);
     return res.status(500).json({ error: error.message });
+  }
+};
+
+export const searchProfessionalsHighlightsWeek = async (req, res) => {
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Pesquisa os destaques da semana'
+    #swagger.responses[200] = { description: 'Profissionais encontrados, retorna um range de 10 profissionais' } 
+    #swagger.responses[500] = { description: 'Erro no servidor' }
+    #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Pesquisar pelos profissionais destaques da semana.',
+            schema: {
+              'page' : '1'
+            }
+    }
+  */
+
+  try {
+    let page = parseInt(req.body.page) || 1;
+    const limit = 10;
+
+    const totalProfessionals = await User.countDocuments({ userType: "professional" }, { hashedOTP: 0 });
+
+    const pageCount = Math.ceil(totalProfessionals / limit);
+
+    if (page > pageCount && pageCount > 0) {
+      page = pageCount;
+    }
+
+    const professionals = await User.find({ userType: "professional" }, { hashedOTP: 0 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    console.log(professionals);
+
+    return res.status(200).json({
+      professionals: professionals,
+      page: page,
+      pageCount: pageCount,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error,
+    });
+  }
+};
+
+export const searchProfessionalBySpeciality = async (req, res) => {
+  /*
+    #swagger.tags = ['User']
+    #swagger.summary = 'Pesquisa um range de 10 profissionais de uma especialidade específica'
+    #swagger.responses[200] = { description: 'Profissional encontrado, retorna um range de 10 profissionais' } 
+    #swagger.responses[500] = { description: 'Erro no servidor' }
+    #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Pesquisar pelos profissionais destaques da semana.',
+            schema: {
+              'page' : '1'
+            }
+    }
+  */
+  const speciality = req.params.speciality;
+  try {
+    let page = parseInt(req.body.page) || 1;
+    let limit = 10;
+
+    const totalProfessionals = await User.countDocuments(
+      { professionalSpecialities: { $in: [speciality] } },
+      { hashedOTP: 0 }
+    );
+
+    const pageCount = Math.ceil(totalProfessionals / limit);
+
+    if (page > pageCount && pageCount > 0) {
+      page = pageCount;
+    }
+
+    const professionals = await User.find({ professionalSpecialities: { $in: [speciality] } }, { hashedOTP: 0 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    console.log(professionals);
+
+    return res.status(200).json({
+      professionals: professionals,
+      page: page,
+      pageCount: pageCount,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
   }
 };

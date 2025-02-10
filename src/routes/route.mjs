@@ -5,6 +5,8 @@ import {
   checkOTP,
   completeSignUpPatient,
   completeSignUpProfessional,
+  searchProfessionalsHighlightsWeek,
+  searchProfessionalBySpeciality,
 } from "./../controller/userController.mjs";
 
 const router = express.Router();
@@ -33,6 +35,8 @@ router.post("/auth/sendOTP", checkUserEmailSendOTP);
 router.post("/auth/checkOTP", checkOTP);
 router.post("/auth/createPatient", completeSignUpPatient);
 router.post("/auth/createProfessional", completeSignUpProfessional);
+router.post("/search/highlightsWeek", searchProfessionalsHighlightsWeek);
+router.post("/search/professionalBySpeciality/:speciality", searchProfessionalBySpeciality);
 
 router.get("/teste", (req, res) => {
   /*

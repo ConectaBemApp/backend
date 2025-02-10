@@ -190,6 +190,78 @@
         }
       }
     },
+    "/search/highlightsWeek": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Pesquisa os destaques da semana",
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Pesquisar pelos profissionais destaques da semana.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "string",
+                  "example": "1"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profissionais encontrados, retorna um range de 10 profissionais"
+          },
+          "500": {
+            "description": "Erro no servidor"
+          }
+        }
+      }
+    },
+    "/search/professionalBySpeciality/{speciality}": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Pesquisa um range de 10 profissionais de uma especialidade específica",
+        "description": "",
+        "parameters": [
+          {
+            "name": "speciality",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Pesquisar pelos profissionais destaques da semana.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "string",
+                  "example": "1"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profissional encontrado, retorna um range de 10 profissionais"
+          },
+          "500": {
+            "description": "Erro no servidor"
+          }
+        }
+      }
+    },
     "/teste": {
       "get": {
         "tags": [
@@ -210,8 +282,8 @@
       "type": "object",
       "properties": {
         "userId": {
-          "type": "number",
-          "example": 1234
+          "type": "string",
+          "example": "1234"
         },
         "name": {
           "type": "string",
@@ -268,8 +340,8 @@
       "type": "object",
       "properties": {
         "userId": {
-          "type": "number",
-          "example": 1234
+          "type": "string",
+          "example": "1234"
         },
         "name": {
           "type": "string",
