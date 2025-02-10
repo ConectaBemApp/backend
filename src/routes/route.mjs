@@ -16,7 +16,7 @@ const corsOptions = {
     const allowedOrigins = [
       "https://backend-ofx7.onrender.com",
       "http://localhost:3000",
-      "https://conecta-bem-visu.vercel.app/auth",
+      "https://conecta-bem-visu.vercel.app/",
     ];
 
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
