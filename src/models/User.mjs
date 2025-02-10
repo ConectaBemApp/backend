@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
   userServicePreferences: [String],
   userAcessibilityPreferences: [String],
   profilePhoto: String,
+  userType: String,
 });
 
 const User = mongoose.model("User", userSchema);

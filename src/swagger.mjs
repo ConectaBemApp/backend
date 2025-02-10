@@ -32,7 +32,7 @@ const doc = {
   schemes: schemes,
   definitions: {
     AddUserPaciente: {
-      $userId: 1234,
+      $userId: "1234",
       $name: "Thiago Cabral",
       $birthdayDate: "20/12/2003",
       $userSpecialities: ["Acumputura", "Aromaterapia"],
@@ -41,7 +41,7 @@ const doc = {
       profilePhoto: "https://www.url/url",
     },
     AddUserProfessional: {
-      $userId: 1234,
+      $userId: "1234",
       $name: "Ronaldinho Gaúcho",
       $birthdayDate: "20/12/2003",
       $cepResidencial: "12345-678",
