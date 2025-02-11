@@ -93,6 +93,7 @@ export const checkOTP = async (req, res) => {
       msg: "Parâmetros exigidos não estão sendo enviados ou não estão sendo enviados de forma correta no body",
     });
   }
+
   try {
     const userExists = await User.findOne({ email: email });
     if (!userExists) {
@@ -101,6 +102,7 @@ export const checkOTP = async (req, res) => {
 
     const resultComparation = await bcrypt.compare(OTP, userExists.hashedOTP);
     console.log(`Comparação entre os OTPs: ${resultComparation}`);
+
     if (resultComparation) {
       const message = {
         id: userExists._id,
@@ -112,10 +114,14 @@ export const checkOTP = async (req, res) => {
           isConfirmed: true,
         },
       };
+
       if (userExists.status === "completed") {
         message.email.exists = true;
-        const accessToken = jwt.sign(message, config.ACCESS_TOKEN_SECRET);
-        res.status(200).json({ accessToken: accessToken });
+        const accessToken = jwt.sign(userExists.toObject(), config.ACCESS_TOKEN_SECRET);
+        message.jwt = accessToken;
+        console.log(message);
+
+        res.status(200).json({ message });
       } else if (userExists.status === "pending") {
         res.status(200).json({ message });
       } else {
@@ -179,6 +185,7 @@ export const completeSignUpPatient = async (req, res) => {
     userSpecialities,
     userServicePreferences,
     userType: "patient",
+    status: "completed",
   };
   if (userAcessibilityPreferences !== undefined) {
     update.userAcessibilityPreferences = userAcessibilityPreferences;
@@ -191,7 +198,7 @@ export const completeSignUpPatient = async (req, res) => {
     const result = await User.updateOne({ _id: userId }, { $set: update });
     console.log("Resultado da atualização:", result);
     if (result.modifiedCount > 0) {
-      const updatedUser = await User.findOne([{ _id: { $in: [userId] } }, { hashedOTP: 0 }]);
+      const updatedUser = await User.findOne({ _id: userId }).select("-hashedOTP");
 
       if (updatedUser.length === 0) {
         return res.status(404).json({ error: "Usuário não encontrado" });
