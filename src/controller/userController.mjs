@@ -150,13 +150,14 @@ export const completeSignUpPatient = async (req, res) => {
     userId,
     name,
     birthdayDate,
+    cep,
     userSpecialities,
     userServicePreferences,
     userAcessibilityPreferences,
     profilePhoto,
   } = req.body;
 
-  if (!userId || !name || !birthdayDate || !userSpecialities || !userServicePreferences) {
+  if (!userId || !name || !birthdayDate || !userSpecialities || !userServicePreferences || !cep) {
     return res.status(422).json({
       msg: "Existem alguns parâmetros faltando para completar o cadastro do paciente",
     });
@@ -176,6 +177,7 @@ export const completeSignUpPatient = async (req, res) => {
   const update = {
     name,
     birthdayDate: parsedDate.result,
+    cep,
     userSpecialities,
     userServicePreferences,
     userType: "patient",
@@ -318,7 +320,7 @@ export const completeSignUpProfessional = async (req, res) => {
 };
 
 export const searchProfessionalsHighlightsWeek = async (req, res) => {
-  /*
+  /* 
     #swagger.tags = ['User']
     #swagger.summary = 'Pesquisa os destaques da semana'
     #swagger.responses[200] = { description: 'Profissionais encontrados, retorna um range de 10 profissionais' } 
